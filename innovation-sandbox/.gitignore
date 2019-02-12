@@ -9,9 +9,6 @@ output.log
 #Ignore default Caliper log location
 log/
 
-# Ignore any generted html files
-*.html
-
 # Ignore DS_Store files from Mac
 **.DS_Store
 
