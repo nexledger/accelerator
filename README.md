@@ -15,14 +15,19 @@ Caliper is a blockchain performance benchmark framework which is one of the Hype
 ### Getting Started
 #### Prerequisites
 To use Hyperledger Caliper, you must install the following tools in advance.
-
 - NodeJS 8.X
 - node-gyp
 - Docker
 - Docker-compose
 
+##### Windows Extras
+To mount `/var/run/docker.sock`, an environment variable may be exported. For more details, please visit the issue on [Github](https://github.com/docker/for-win/issues/1829#issuecomment-376328022).
+- COMPOSE_CONVERT_WINDOWS_PATHS=1
+
+Every drive used for volume mounting should be shared to be available from the containers. Please enable drive sharing on Docker Settings panel.
+
 #### Installing
-Install the node modules from the root folder via the npm executable command.
+Install the node modules from `innovation-sandbox` folder via the npm executable command.
 ```bash
 $ npm install
 ```
@@ -42,7 +47,10 @@ $ node main.js -n ../../network/fabric-v1.2/1org2peeraccelerator/fabric-go.json
 The command automatically downloads a docker image of Accelerator, configure Fabric network, and run benchmark tests.
 
 ## Whitepaper
-TBD
+Whitepaper includes:
+- The key design features of Nexledger enabling high performance enterprise-wide blockchain technology.
+- The simulation result that shows the performance improvement of Hyperledger Fabric by Nexledger in practical scenarios.
+- The use cases that provide an insight for understanding industrial blockchain platforms.
 
 ## Further information
-For further information please contact Samsung SDS(nexledger.h@samsung.com)
+For further information please contact Samsung SDS(nexledger.h@samsung.com).
