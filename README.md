@@ -36,7 +36,7 @@ The current version supports two benchmark scenarios, simple and smallbank which
 
 Move to the benchmark scenario directory (e.g. `benchmark/simple`, `benchmark/smallbank` ) and run `main.js` with option. 
 ```bash
-$ node main.js -n network/fabric-v1.2/1org2peeraccelerator/fabric-go.json
+$ node main.js -n ../../network/fabric-v1.2/1org2peeraccelerator/fabric-go.json
 ```
 
 The command automatically downloads a docker image of Accelerator, configure Fabric network, and run benchmark tests.
