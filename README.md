@@ -27,7 +27,7 @@ To mount `/var/run/docker.sock`, an environment variable may be exported. For mo
 Every drive used for volume mounting should be shared to be available from the containers. Please enable drive sharing on Docker Settings panel.
 
 #### Installing
-Install the node modules from the root folder via the npm executable command.
+Install the node modules from `innovation-sandbox` folder via the npm executable command.
 ```bash
 $ npm install
 ```
