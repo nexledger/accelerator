@@ -882,7 +882,7 @@ function querybycontext(context, id, version, name, fcn) {
         channelId: context.channel.getName(),
         chaincodeName: id,
         fcn: fcn,
-        args: args
+        args: byteArgs
     };
 
     if (context.engine) {
@@ -896,7 +896,11 @@ function querybycontext(context, id, version, name, fcn) {
                 txStatus.SetResult(data[0]);
                 resolve(txStatus)
             } else {
-                throw new Error('No query responses');
+                console.log('Query chaincode failed: ' + (error.stack ? error.stack : error));
+                txStatus.SetStatusFail();
+                txStatus.SetFlag(error.code);
+                txStatus.error_messages = error.message;
+                resolve(txStatus);
             }
         });
     });
@@ -921,54 +925,3 @@ function readAllFiles(dir) {
 }
 
 module.exports.readAllFiles = readAllFiles;
-
-function invoke(context, contractID, fcn, args, target) {
-    const TxErrorEnum = require('./constant.js').TxErrorEnum;
-    let invokeStatus = new TxStatus('');
-    let errFlag = TxErrorEnum.NoError;
-    invokeStatus.SetFlag(errFlag);
-
-    return new Promise((resolve, reject) => {
-        let byteArgs = [];
-        for (let i = 0; i < args.length; i++) {
-            byteArgs.push(Buffer.from(args[i], 'utf8'));
-        }
-        const request = {
-            channelId: context.channel.getName(),
-            chaincodeName: contractID,
-            fcn: fcn,
-            args: byteArgs
-        };
-
-        if (context.engine) {
-            context.engine.submitCallback(1);
-        }
-
-        target(request, (error, data) => {
-            if (!error) {
-                //smallbank - Succ : ', 'channelId : ', context.channel.getName(), ', chaincodeName : ', contractID, ', fcn : ', fcn, ', args : ', args);
-                resolve(data);
-            } else {
-                //smallbank - Fail : ', 'channelId : ', context.channel.getName(), ', chaincodeName : ', contractID, ', fcn : ', fcn, ', args : ', args);
-                reject(error);
-            }
-        });
-    }).then((response) => {
-        let now = Date.now();
-        invokeStatus.SetID(response.txId);
-        invokeStatus.Set('time_endorse', now);
-        invokeStatus.Set('time_order', now);
-        invokeStatus.SetVerification(true);
-        invokeStatus.SetStatusSuccess();
-        invokeStatus.SetResult(response.payload);
-
-        return Promise.resolve(invokeStatus);
-    }).catch((err) => {
-        console.log('Invoke chaincode failed: ' + (err.stack ? err.stack : err));
-        invokeStatus.SetStatusFail();
-        invokeStatus.SetFlag(err.code);
-        invokeStatus.error_messages = err.message;
-
-        return Promise.resolve(invokeStatus);
-    });
-}
