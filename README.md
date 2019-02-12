@@ -21,4 +21,4 @@ The current version supports two benchmark scenarios, simple and smallbank which
 For more test options, please refer to Caliper documents.
 
 # Further information
-For further information please contact Samsung SDS(nexledger.h@samsung.com).
+For further information please contact Samsung SDS(nexledger.h@samsung.com)
