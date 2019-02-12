@@ -44,6 +44,7 @@ For example, the following command executes the performance evaluation with Acce
 ```bash
 $ node main.js -n ../../network/fabric-v1.2/1org2peeraccelerator/accelerator-go.json
 ```
+The command automatically downloads a docker image of Accelerator, configure Fabric network, and run benchmark tests.
 
 Fabric benchmark test without Accelerator can be run by executing following command.
 ```bash
@@ -51,8 +52,6 @@ $ node main.js -n ../../network/fabric-v1.2/1org2peer/fabric-go.json
 ```
 
 To modify test configuration, please check the `Configuration File` section on the [Caliper website](https://hyperledger.github.io/caliper/docs/2_Architecture.html).
-
-The command automatically downloads a docker image of Accelerator, configure Fabric network, and run benchmark tests.
 
 **The test result can be varied depending on your environment.**
 
@@ -62,6 +61,6 @@ Whitepaper includes:
 - The evaluation results that show the performance improvement of Hyperledger Fabric by Accelerator in practical scenarios
 - The use cases that provide an insight for understanding industrial blockchain platforms
 
-## Further information
-For further information please contact Samsung SDS(nexledger.h@samsung.com).
+## Further Information
+For further information please contact Samsung SDS(nexledger@samsung.com).
 
