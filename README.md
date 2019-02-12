@@ -48,9 +48,9 @@ The command automatically downloads a docker image of Accelerator, configure Fab
 
 ## Whitepaper
 Whitepaper includes:
-- The key design features of Nexledger enabling high performance enterprise-wide blockchain technology.
-- The simulation result that shows the performance improvement of Hyperledger Fabric by Nexledger in practical scenarios.
-- The use cases that provide an insight for understanding industrial blockchain platforms.
+- The key design features of Accelerator enabling high performance enterprise-wide blockchain technology
+- The evaluation results that show the performance improvement of Hyperledger Fabric by Accelerator in practical scenarios
+- The use cases that provide an insight for understanding industrial blockchain platforms
 
 ## Further information
 For further information please contact Samsung SDS(nexledger.h@samsung.com).
