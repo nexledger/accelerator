@@ -47,7 +47,10 @@ $ node main.js -n ../../network/fabric-v1.2/1org2peeraccelerator/fabric-go.json
 The command automatically downloads a docker image of Accelerator, configure Fabric network, and run benchmark tests.
 
 ## Whitepaper
-TBD
+Whitepaper includes:
+- The key design features of Nexledger enabling high performance enterprise-wide blockchain technology.
+- The simulation result that shows the performance improvement of Hyperledger Fabric by Nexledger in practical scenarios.
+- The use cases that provide an insight for understanding industrial blockchain platforms.
 
 ## Further information
-For further information please contact Samsung SDS(nexledger.h@samsung.com)
+For further information please contact Samsung SDS(nexledger.h@samsung.com).
