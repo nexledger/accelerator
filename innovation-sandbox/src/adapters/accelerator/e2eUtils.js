@@ -812,6 +812,7 @@ async function sendTransaction(context, signedTransaction, invokeStatus, startTi
  * @return {Promise<TxStatus>} The result and stats of the transaction invocation.
  */
 function invokebycontext(context, id, version, args, timeout) {
+    const invokeStatus = new TxStatus('');
 
     const f = args[0];
     args.shift();
@@ -836,16 +837,15 @@ function invokebycontext(context, id, version, args, timeout) {
         context.accelerator.execute(request, (error, data) => {
             if (!error) {
                 let now = Date.now();
-                let invokeStatus = new TxStatus(data.txId);
-                invokeStatus.Set('time_endorse', now);
+                invokeStatus.SetID(data.txId);
                 invokeStatus.Set('time_order', now);
+                invokeStatus.Set('time_endorse', now);
                 invokeStatus.SetVerification(true);
                 invokeStatus.SetStatusSuccess();
                 invokeStatus.SetResult(data.payload);
                 resolve(invokeStatus);
             } else {
                 console.log('Invoke chaincode failed: ' + (error.stack ? error.stack : error));
-                let invokeStatus = new TxStatus('');
                 invokeStatus.SetStatusFail();
                 invokeStatus.SetFlag(error.code);
                 invokeStatus.error_messages = error.message;
