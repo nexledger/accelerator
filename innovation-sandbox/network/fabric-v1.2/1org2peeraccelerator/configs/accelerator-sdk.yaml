@@ -1,0 +1,109 @@
+name: "accelerator-network"
+
+x-type: "hlfv1"
+x-loggingLevel: info
+
+description: "The network to be in if you want to stay in the global trade business"
+
+version: 1.0.0
+
+client:
+  organization: org1.example.com
+  logging:
+    level: warning
+  peer:
+    timeout:
+      connection: 3s
+      queryResponse: 45s
+      executeTxResponse: 30s
+      discovery:
+        greylistExpiry: 5s
+  eventService:
+    timeout:
+      connection: 3s
+      registrationResponse: 3s
+  orderer:
+    timeout:
+      connection: 3s
+      response: 5s
+  global:
+    timeout:
+      query: 45s
+      execute: 60s
+    cache:
+      connectionIdle: 30s
+      eventServiceIdle: 500ms
+  cryptoconfig:
+    path: crypto-config
+  credentialStore:
+    cryptoStore:
+      path: /accelerator/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+
+  BCCSP:
+    security:
+      enabled: true
+      default:
+        provider: "SW"
+      hashAlgorithm: "SHA2"
+      softVerify: true
+      ephemeral: false
+      level: 256
+
+channels:
+  _default:
+    orderers:
+      - orderer.example.com
+    peers:
+      peer0.org1.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.org1.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+organizations:
+  org1.example.com:
+    mspid: Org1MSP
+    cryptoPath: peerOrganizations/org1.example.com/users/{userName}@org1.example.com/msp
+    peers:
+      - peer0.org1.example.com
+      - peer1.org1.example.com
+    certificateAuthorities:
+      - ca.org1.example.com
+  example.com:
+    mspid: OrdererMSP
+    cryptoPath: ordererOrganizations/example.com/users/{userName}@example.com/msp
+
+orderers:
+  orderer.example.com:
+    url: grpc://orderer.example.com:7050
+    grpcOptions:
+      ssl-target-name-override: orderer.example.com
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      allow-insecure: true
+peers:
+  peer0.org1.example.com:
+    url: grpc://peer0.org1.example.com:7051
+    grpcOptions:
+      ssl-target-name-override: peer0.org1.example.com
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      allow-insecure: true
+  peer1.org1.example.com:
+    url: grpc://peer1.org1.example.com:7051
+    grpcOptions:
+      ssl-target-name-override: peer1.org1.example.com
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      allow-insecure: true

@@ -1,0 +1,81 @@
+{
+  "caliper": {
+    "blockchain": "fabric",
+    "command" : {
+      "start": "docker-compose -f network/fabric-v1.2/1org2peeraccelerator/docker-compose-tls.yaml up -d;sleep 3s",
+      "end" : "docker-compose -f network/fabric-v1.2/1org2peeraccelerator/docker-compose-tls.yaml down;docker rm $(docker ps -aq);docker rmi $(docker images dev* -q)"
+    }
+  },
+  "fabric": {
+    "cryptodir": "network/fabric-v1.2/config/crypto-config",
+    "network": {
+      "orderer": {
+        "url": "grpcs://localhost:7050",
+        "mspid": "OrdererMSP",
+        "msp": "network/fabric-v1.2/config/crypto-config/ordererOrganizations/example.com/msp/",
+        "server-hostname": "orderer.example.com",
+        "tls_cacerts": "network/fabric-v1.2/config/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
+      },
+      "org1": {
+        "name": "peerOrg1",
+        "mspid": "Org1MSP",
+        "msp": "network/fabric-v1.2/config/crypto-config/peerOrganizations/org1.example.com/msp/",
+        "ca": {
+          "url": "https://localhost:7054",
+          "name": "ca-org1"
+        },
+        "peer1": {
+          "requests": "grpcs://localhost:7051",
+          "events": "grpcs://localhost:7053",
+          "server-hostname": "peer0.org1.example.com",
+          "tls_cacerts": "network/fabric-v1.2/config/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+        },
+        "peer2": {
+          "requests": "grpcs://localhost:7057",
+          "events": "grpcs://localhost:7059",
+          "server-hostname": "peer1.org1.example.com",
+          "tls_cacerts": "network/fabric-v1.2/config/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt"
+        }
+      }
+    },
+    "channel": [
+      {
+        "name": "mychannel",
+        "deployed": false,
+        "config": "network/fabric-v1.2/config/mychannel.tx",
+        "organizations": ["org1"]
+      }
+    ],
+    "chaincodes": [
+      {"id": "simple", "path": "contract/fabric/simple-accelerator/go", "language":"golang", "version": "v0", "channel": "mychannel"},
+      {"id": "smallbank", "path": "contract/fabric/smallbank-accelerator", "language":"golang", "version": "v0", "channel": "mychannel"}
+    ],
+    "endorsement-policy": {
+      "identities": [
+        {
+          "role": {
+            "name": "member",
+            "mspId": "Org1MSP"
+          }
+        }
+      ],
+      "policy": { "1-of": [{"signed-by": 0}]}
+    },
+    "context": {
+      "smallOperations": "mychannel",
+      "init": "mychannel",
+      "open": "mychannel",
+      "publish": "mychannel",
+      "query": "mychannel"
+    }
+  },
+  "accelerator": {
+    "server": "127.0.0.1:8090"
+  },
+  "info" : {
+    "Version": "1.2.0",
+    "Size": "1 Orgs with 2 Peers",
+    "Orderer": "Solo",
+    "Distribution": "Single Host"
+  }
+}
