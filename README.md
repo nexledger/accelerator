@@ -39,7 +39,8 @@ $ npm run fabric-v1.2-deps
 #### Running the tests
 The current version supports two benchmark scenarios, simple and smallbank which are provided by Caliper. 
 
-Move to the benchmark scenario directory (e.g. `benchmark/simple`, `benchmark/smallbank` ) and run `main.js` with option. 
+Move to the benchmark scenario directory (e.g. `benchmark/simple`, `benchmark/smallbank` ) and run `main.js` with option.
+For example, the following command executes the performance evaluation with Accelerator in 1 organization with 2 peers network.
 ```bash
 $ node main.js -n ../../network/fabric-v1.2/1org2peeraccelerator/fabric-go.json
 ```
