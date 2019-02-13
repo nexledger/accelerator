@@ -44,6 +44,7 @@ For example, the following command executes the performance evaluation with Acce
 ```bash
 $ node main.js -n ../../network/fabric-v1.2/1org2peeraccelerator/accelerator-go.json
 ```
+The command automatically downloads a docker image of Accelerator, configure Fabric network, and run benchmark tests.
 
 Fabric benchmark test without Accelerator can be run by executing following command.
 ```bash
@@ -51,8 +52,6 @@ $ node main.js -n ../../network/fabric-v1.2/1org2peer/fabric-go.json
 ```
 
 To modify test configuration, please check the `Configuration File` section on the [Caliper website](https://hyperledger.github.io/caliper/docs/2_Architecture.html).
-
-The command automatically downloads a docker image of Accelerator, configure Fabric network, and run benchmark tests.
 
 **The test result can be varied depending on your environment.**
 
