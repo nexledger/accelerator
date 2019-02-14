@@ -20,12 +20,6 @@ To use Hyperledger Caliper, you must install the following tools in advance.
 - Docker
 - Docker-compose
 
-##### Windows Extras
-To mount `/var/run/docker.sock`, an environment variable may be exported. For more details, please visit the issue on [Github](https://github.com/docker/for-win/issues/1829#issuecomment-376328022).
-- COMPOSE_CONVERT_WINDOWS_PATHS=1
-
-Every drive used for volume mounting should be shared to be available from the containers. Please enable drive sharing on Docker Settings panel.
-
 #### Installing
 Install the node modules from `innovation-sandbox` folder via the npm executable command.
 ```bash
