@@ -836,11 +836,7 @@ function invokebycontext(context, id, version, args, timeout) {
     return new Promise((resolve, reject) => {
         context.accelerator.execute(request, (error, data) => {
             if (!error) {
-                let now = Date.now();
                 invokeStatus.SetID(data.txId);
-                invokeStatus.Set('time_order', now);
-                invokeStatus.Set('time_endorse', now);
-                invokeStatus.SetVerification(true);
                 invokeStatus.SetStatusSuccess();
                 invokeStatus.SetResult(data.payload);
                 resolve(invokeStatus);
