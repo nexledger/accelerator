@@ -93,7 +93,7 @@ services:
 
   accelerator:
     container_name: accelerator
-    image: docker.io/nexledger/accelerator:latest
+    image: docker.io/nexledger/accelerator:sandbox
     working_dir: /accelerator
     command: ["./accelerator", "-f", "configs/accelerator.yaml"]
     ports:
