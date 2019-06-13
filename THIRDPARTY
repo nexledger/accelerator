@@ -1,0 +1,52 @@
+These are the 3rd party libraries used in Accelerator.
+
+atomic,MIT License,https://github.com/uber-go/atomic
+perks,MIT License,http://github.com/beorn7/perks/
+certificate-transparency,Apache License 2.0,http://github.com/google/certificate-transparency/
+cfssl,"BSD 2-clause ""Simplified"" License",https://github.com/cloudflare/cfssl
+continuity,Apache License 2.0,https://github.com/containerd/continuity
+go-spew,ISC License,https://github.com/davecgh/go-spew
+docker,Apache License 2.0,http://github.com/docker/docker/
+go-units,Apache License 2.0,http://github.com/docker/go-units/
+fsnotify,"BSD 3-clause ""New"" or ""Revised"" License",http://github.com/go-fsnotify/fsnotify/
+golang-text,"BSD 3-clause ""New"" or ""Revised"" License",https://github.com/golang/text
+go-ansiterm,MIT License,https://github.com/azure/go-ansiterm
+go-digest,Apache License 2.0,https://github.com/opencontainers/go-digest
+go-dockerclient,"BSD 2-clause ""Simplified"" License",http://github.com/fsouza/go-dockerclient/
+go-genproto,Apache License 2.0,https://github.com/google/go-genproto
+go-grpc-middleware,Apache License 2.0,https://github.com/grpc-ecosystem/go-grpc-middleware
+logfmt,MIT License,http://github.com/go-logfmt/logfmt/
+go-logging,"BSD 3-clause ""New"" or ""Revised"" License",http://github.com/op/go-logging/
+go-toml,MIT License,http://github.com/pelletier/go-toml/
+go-windows-terminal-sequences,MIT License,https://github.com/konsorten/go-windows-terminal-sequences
+golang-crypto,"BSD 3-clause ""New"" or ""Revised"" License",http://github.com/golang/crypto/
+golang-protobuf,"BSD 3-clause ""New"" or ""Revised"" License",https://github.com/golang/protobuf
+golang-mock,Apache License 2.0,http://github.com/golang/mock/
+Gotty,"BSD 2-clause ""Simplified"" License",https://github.com/ijc/Gotty
+grpc-go,Apache License 2.0,https://github.com/grpc/grpc-go
+hcl,Mozilla Public License 2.0,https://github.com/hashicorp/hcl
+fabirc-sdk-go,Apache License 2.0,https://github.com/hyperledger/fabric-sdk-go
+image-spec,Apache License 2.0,https://github.com/opencontainers/image-spec
+jWalterWeatherman,MIT License,https://github.com/spf13/jwalterweatherman
+kit,MIT License,https://github.com/go-kit/kit
+logfmt,Unspecified,http://github.com/kr/logfmt/
+logrus,MIT License,http://github.com/Sirupsen/logrus/
+magiconair-properties,"BSD 3-clause ""New"" or ""Revised"" License",http://github.com/magiconair/properties/
+mapstructure,MIT License,http://github.com/mitchellh/mapstructure/
+matttproud-golang_protobuf_extensions,Apache License 2.0,http://github.com/matttproud/golang_protobuf_extensions/
+go-winio,MIT License,http://github.com/Microsoft/go-winio/
+golang-net,"BSD 3-clause ""New"" or ""Revised"" License",https://github.com/golang/net
+pflag,"BSD 3-clause ""New"" or ""Revised"" License",http://github.com/ogier/pflag/
+pkcs11,"BSD 3-clause ""New"" or ""Revised"" License",https://github.com/miekg/pkcs11/
+errors,"BSD 2-clause ""Simplified"" License",https://github.com/pkg/errors
+go-difflib,"BSD 3-clause ""New"" or ""Revised"" License",http://github.com/pmezard/go-difflib/
+prometheus,Apache License 2.0,http://github.com/prometheus/prometheus/
+protobuf,"BSD 3-clause ""New"" or ""Revised"" License",http://code.google.com/p/protobuf/
+runc,Apache License 2.0,https://github.com/opencontainers/runc
+afero,Apache License 2.0,http://github.com/spf13/afero/
+cast,MIT License,http://github.com/spf13/cast/
+stretchr testify,MIT License,https://github.com/stretchr/testify
+golang-sys,"BSD 3-clause ""New"" or ""Revised"" License",https://github.com/golang/sys
+viper,MIT License,http://github.com/spf13/viper/
+yaml for Go,Apache License 2.0,http://github.com/go-yaml/yaml/
+zap,MIT License,https://github.com/uber-go/zap

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option go_package = "github.com/nexledger/accelerator/protos";
+
+service AcceleratorService {
+    rpc Execute (TxRequest) returns (TxResponse) {
+    }
+    rpc Query (TxRequest) returns (TxResponse) {
+    }
+}
+
+message TxRequest {
+    string channelId = 1;
+    string chaincodeName = 2;
+    string fcn = 3;
+    repeated bytes args = 4;
+}
+
+message TxResponse {
+    bytes payload = 1;
+    string txId = 2;
+    TransactionValidation validation = 3;
+}
+
+message TransactionValidation {
+    int32 code = 1;
+    string description = 2;
+}

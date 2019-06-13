@@ -1,0 +1,22 @@
+sdk: "deploy/local/configs/accelerator-sdk.yaml"
+host: "localhost"
+port: 8090
+userName: "Admin"
+organization: "peerorg1"
+batch:
+  - type: "execute"
+    channelId: "accelerator"
+    chaincodeName: "ping"
+    fcn: "ping"
+    queueSize: 1000
+    maxWaitTimeSeconds: 5
+    maxBatchItems: 10
+    recovery: true
+  - type: "query"
+    channelId: "accelerator"
+    chaincodeName: "ping"
+    fcn: "pong"
+    queueSize: 1000
+    maxWaitTimeSeconds: 5
+    maxBatchItems: 10
+    recovery: true
