@@ -76,7 +76,7 @@ func awaitTermination(failures ...chan error) {
 
 func initializeArguments() {
 	flagSet = flag.NewFlagSet("server", flag.ExitOnError)
-	flagSet.StringVar(&configPath, "f", "examples/ping/configs/accelerator.yaml", "-f <configFilePath> : config file path")
+	flagSet.StringVar(&configPath, "f", "accelerator.yaml", "-f <configFilePath> : config file path")
 	flagSet.Parse(os.Args[1:])
 }
 

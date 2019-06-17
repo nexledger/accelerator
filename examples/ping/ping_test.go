@@ -33,12 +33,12 @@ const (
 	address       = "127.0.0.1:5050"
 )
 
-func Test_Batch(t *testing.T) {
-	Test_Ping(t)
-	Test_Pong(t)
+func TestBatch(t *testing.T) {
+	TestPing(t)
+	TestPong(t)
 }
 
-func Test_Ping(t *testing.T) {
+func TestPing(t *testing.T) {
 	client := pbbatch.NewAcceleratorServiceClient(connect(t))
 	notifiers := make([]chan string, numOfPings)
 	for i := 0; i < numOfPings; i++ {
@@ -65,7 +65,7 @@ func Test_Ping(t *testing.T) {
 	}
 }
 
-func Test_Pong(t *testing.T) {
+func TestPong(t *testing.T) {
 	client := pbbatch.NewAcceleratorServiceClient(connect(t))
 	notifiers := make([]chan string, numOfPings)
 	for i := 0; i < numOfPings; i++ {

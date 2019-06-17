@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ../network
+cd "$(dirname "$0")"/../network
 
 #Shut down the containers
 docker-compose -f docker-compose.yml down

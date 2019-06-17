@@ -1,4 +1,4 @@
-# Accelerator
+# Nexledger Accelerator
 Accelerator is a software component designed to improve the performance of a blockchain network, e.g. Hyperledger Fabric, in terms of transaction throughput. Accelerator enables the blockchain network to deal with a huge number of transaction requests from applications. 
 
 This project, named Innovation Sandbox, provides tools and methods to download, test, and reproduce the improved performance results using Accelerator on Hyperledger Fabric. The intent is to enable blockchain developers to run it to see how much performance benefits they can expect in reproducible ways.
@@ -30,15 +30,45 @@ Install the modules for the fabric through the following command in that folder.
 $ npm run fabric-v1.2-deps
 ```
 
-#### Running the tests
-The current version supports two benchmark scenarios, simple and smallbank which are provided by Caliper. 
+## Running ping example
+You can learn how to configure Accelerator by running `ping` example. The example is placed in In `examples/ping`. 
 
-Move to the benchmark scenario directory (e.g. `benchmark/simple`, `benchmark/smallbank` ) and run `main.js` with option.
-For example, the following command executes the performance evaluation with Accelerator in 1 organization with 2 peers network.
+To bootstrap Fabric network, please run `start.sh` script.
 ```bash
-$ node main.js -n ../../network/fabric-v1.2/1org2peeraccelerator/accelerator-go.json
+$ ./examples/ping/start.sh
 ```
-The command automatically downloads a docker image of Accelerator, configure Fabric network, and run benchmark tests.
+
+To serve requests from clients, Accelerator should be up and running with proper configuration.
+```bash
+$ accelerator -f examples/ping/configs/accelerator.yaml
+```
+
+Accelerator is a gRPC server and the gRPC services are described in `protos/accelerator.proto`.
+You may send transactions using `examples/ping/ping_test.go` that has gRPC client for ping example. 
+
+You can terminate and remove the network by run `stop.sh` script.
+```bash
+$ ./examples/ping/stop.sh
+```
+
+### Under the hood
+#### Modifying chaincode
+In order to apply Accelerator to your business, you need to modify your chaincode.
+
+`contracts/src/ping/ping.go` is an example chaincode with simple KV write/read operations.
+To run aggregated transactions from Accelerator individually, `ping.go` imports `batchutil.go` and delegates the funcation invocation to `Invoke()` in `batchutil.go`.
+```go
+func (t *PingPongChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+	fnc := string(stub.GetArgs()[0])
+	switch fnc {
+	case "ping":
+		return Invoke(stub, t.ping)
+	case "pong":
+		return Invoke(stub, t.pong)
+	}
+	return shim.Error("Unknown action, check the first argument, must be one of 'insert', 'query'")
+}
+```  
 
 Fabric benchmark test without Accelerator can be run by executing following command.
 ```bash
