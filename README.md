@@ -45,10 +45,13 @@ $ ./examples/ping/stop.sh
 
 ### Under the hood
 #### Modifying chaincode
-In order to apply Accelerator to your business, you need to modify your chaincode.
+In order to apply Accelerator to your business, you need to modify your chaincode. 
+Accelerator aggregates multiple transactions into a batched transaction and submits the batched transaction to the endorsers. 
+So chaincodes operating with Accelerator should be modified to execute aggregated transactions individually.
 
-`contracts/src/ping/ping.go` is an example chaincode with simple KV write/read operations.
-To run aggregated transactions from Accelerator individually, `ping.go` imports `batchutil.go` and delegates the funcation invocation to `Invoke()` in `batchutil.go`.
+`contracts/src/ping/ping.go` is the example chaincode with simple KV write/read operations.
+`ping.go` imports `batchutil.go` for segregating batched transactions from Accelerator and delegates the invocations to `Invoke()` in `batchutil.go`.
+
 ```go
 func (t *PingPongChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	fnc := string(stub.GetArgs()[0])
@@ -95,7 +98,7 @@ batch:
 - `maxBatchItems`: Maximum number of items for a new batch transaction.
 
 ## Whitepaper
-Whitepaper includes:
+[Whitepaper](https://github.com/nexledger/accelerator/blob/master/docs/Whitepaper-Acceleratoring%20Throughput%20in%20Permissioned%20Blockchain%20Networks.pdf) includes:
 - The key design features of Accelerator enabling high performance enterprise-wide blockchain technology
 - The evaluation results that show the performance improvement of Hyperledger Fabric by Accelerator in practical scenarios
 - The use cases that provide an insight for understanding industrial blockchain platforms
