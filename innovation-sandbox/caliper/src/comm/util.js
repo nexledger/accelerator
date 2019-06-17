@@ -19,7 +19,7 @@ const winston = require('winston');
 require('winston-daily-rotate-file');
 const fs = require('fs');
 const yaml = require('js-yaml');
-const cfUtil = require('../../src/comm/config-util.js');
+const cfUtil = require('./config-util.js');
 // comm --> src --> root
 const rootDir = path.join('..', '..');
 const LOGGING_LEVELS =  ['debug','info','warn','error'];
