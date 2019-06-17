@@ -1,6 +1,6 @@
-sdk: "deploy/local/configs/accelerator-sdk.yaml"
+sdk: "examples/ping/configs/accelerator-sdk.yaml"
 host: "localhost"
-port: 8090
+port: 5050
 userName: "Admin"
 organization: "peerorg1"
 batch:

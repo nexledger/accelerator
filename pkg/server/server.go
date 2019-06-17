@@ -42,23 +42,30 @@ type Server struct {
 	server *grpc.Server
 }
 
-func (s *Server) Serve() error {
-	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", s.host, s.port))
-	if err != nil {
-		return err
-	}
+func (s *Server) Serve() chan error {
+	failed := make(chan error)
 
-	client, err := s.conf.BatchClient()
-	if err != nil {
-		return err
-	}
+	go func() {
+		listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", s.host, s.port))
+		if err != nil {
+			s.log.Error("Failed to listen for gRPC server.", err)
+			failed <- err
+		}
 
-	s.client = client
-	protos.RegisterAcceleratorServiceServer(s.server, s)
+		s.client, err = s.conf.BatchClient()
+		if err != nil {
+			s.log.Error("Failed to Create BatchClient.", err)
+			failed <- err
+		}
 
-	s.log.Info("starting grpc server")
-
-	return s.server.Serve(listener)
+		protos.RegisterAcceleratorServiceServer(s.server, s)
+		s.log.Info("Starting gRPC server.")
+		if err := s.server.Serve(listener); err != nil {
+			s.log.Error("gRPC server is terminated.", err)
+			failed <- err
+		}
+	}()
+	return failed
 }
 
 func (s *Server) Stop() {

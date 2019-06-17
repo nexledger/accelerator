@@ -44,28 +44,39 @@ func main() {
 		return
 	}
 
-	if err := s.Serve(); err != nil {
-		logger.Error("Failed to start server: " + err.Error())
-		return
-	}
+	failure := s.Serve()
 
-	logger.Info("Started.")
-	awaitTermination()
+	awaitTermination(failure)
+
 	logger.Info("Shutting down the server......")
 	closeLoggers()
 	s.Stop()
 	logger.Info("Stopped.")
 }
 
-func awaitTermination() {
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+func awaitTermination(failures ...chan error) {
+	terminated := make(chan bool)
+
+	go func() {
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+		<-quit
+		terminated <- true
+	}()
+
+	for _, failure := range failures {
+		go func() {
+			<-failure
+			terminated <- true
+		}()
+	}
+
+	<-terminated
 }
 
 func initializeArguments() {
 	flagSet = flag.NewFlagSet("server", flag.ExitOnError)
-	flagSet.StringVar(&configPath, "f", "deploy/local/configs/accelerator.yaml", "-f <configFilePath> : config file path")
+	flagSet.StringVar(&configPath, "f", "examples/ping/configs/accelerator.yaml", "-f <configFilePath> : config file path")
 	flagSet.Parse(os.Args[1:])
 }
 

@@ -34,7 +34,7 @@ client:
       connectionIdle: 30s
       eventServiceIdle: 500ms
   cryptoconfig:
-    path: deploy/local/fixtures/crypto-config
+    path: examples/network/crypto-config
   credentialStore:
     path: "/tmp/hfc-kvs"
     cryptoStore:
