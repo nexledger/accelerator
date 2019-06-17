@@ -1,15 +1,14 @@
 # Nexledger Accelerator
-Accelerator is a software component designed to improve the performance of a blockchain network, e.g. Hyperledger Fabric, in terms of transaction throughput. Accelerator enables the blockchain network to deal with a huge number of transaction requests from applications. 
+Nexledger Accelerator is a software component designed to improve the performance of a blockchain network, e.g. Hyperledger Fabric, in terms of transaction throughput. Accelerator enables the blockchain network to deal with explosive transaction requests from applications. 
+
+Accelerator receives transactions from clients on behalf of blockchain nodes and provides transaction acceleration in terms of TPS (Transaction Per Second) by classifying, aggregating, and routing the transactions. The current version of Accelerator is compatible with Hyperledger Fabric v1.4.
 
 
 ## Getting Started
 ### Prerequisites
-To use Accelerator, you must install the following tools in advance.
-- Go 1.12+
-
-To run the examples, Docker should be installed to run the Fabric network.
-- Docker
-- Docker-compose
+- Go 1.11+
+- Docker (17.06.2-ce or greater)
+- Docker-compose (1.14.0 or greater)
 
 ### Building Accelerator
 Accelerator supports go module for dependency management. To build the executable, please simply execute `go build`.
@@ -18,20 +17,26 @@ $ go build cmd/accelerator.go
 ```
 
 ## Running ping example
-You can learn how to configure Accelerator by running `ping` example. The example is placed in In `examples/ping`. 
+The ping example shows how to configure and run Accelerator. The example is placed in In `examples/ping`. 
 
-To bootstrap Fabric network, please run `start.sh` script.
+To bootstrap Fabric network, please run `start.sh` script. It configures the Hyperledger Fabric network and installs/instantiates the example chaincode.
 ```bash
 $ ./examples/ping/start.sh
 ```
-
+  
 To serve requests from clients, Accelerator should be up and running with proper configuration.
 ```bash
-$ accelerator -f examples/ping/configs/accelerator.yaml
+$ ./accelerator -f examples/ping/configs/accelerator.yaml
 ```
 
 Accelerator is a gRPC server and the gRPC services are described in `protos/accelerator.proto`.
 You may send transactions using `examples/ping/ping_test.go` that has gRPC client for ping example. 
+```bash
+$  cd examples/ping
+$  go test
+```
+
+
 
 You can terminate and remove the network by run `stop.sh` script.
 ```bash
