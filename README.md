@@ -1,7 +1,7 @@
 # Nexledger Accelerator
 Nexledger Accelerator is a software component designed to improve the performance of a blockchain network, e.g. Hyperledger Fabric, in terms of transaction throughput. Accelerator enables the blockchain network to deal with explosive transaction requests from applications. 
 
-Accelerator receives transactions from clients on behalf of blockchain nodes and provides transaction acceleration in terms of TPS (Transaction Per Second) by classifying, aggregating, and routing the transactions. The current version of Accelerator is compatible with Hyperledger Fabric v1.4.
+Accelerator receives transactions from clients in front of blockchain nodes and provides transaction acceleration in terms of TPS (Transaction Per Second) by classifying, aggregating, and routing the transactions. The current version of Accelerator is compatible with Hyperledger Fabric v1.4.
 
 
 ## Getting Started
@@ -19,7 +19,7 @@ $ go build cmd/accelerator.go
 ## Running ping example
 The ping example shows how to configure and run Accelerator. The example is placed in In `examples/ping`. 
 
-To bootstrap Fabric network, please run `start.sh` script. It configures the Hyperledger Fabric network and installs/instantiates the example chaincode.
+To bootstrap Fabric network, please run `start.sh` script. It configures the Hyperledger Fabric network including install/instantiation of the example chaincode.
 ```bash
 $ ./examples/ping/start.sh
 ```
@@ -36,8 +36,6 @@ $  cd examples/ping
 $  go test
 ```
 
-
-
 You can terminate and remove the network by run `stop.sh` script.
 ```bash
 $ ./examples/ping/stop.sh
@@ -45,9 +43,8 @@ $ ./examples/ping/stop.sh
 
 ### Under the hood
 #### Modifying chaincode
-In order to apply Accelerator to your business, you need to modify your chaincode. 
-Accelerator aggregates multiple transactions into a batched transaction and submits the batched transaction to the endorsers. 
-So chaincodes operating with Accelerator should be modified to execute aggregated transactions individually.
+Accelerator aggregates multiple transactions into a batched transaction and submits the batched transaction to the endorsers.
+Therefore, chaincodes operating with Accelerator should be modified to individually execute aggregated transactions.
 
 `contracts/src/ping/ping.go` is the example chaincode with simple KV write/read operations.
 `ping.go` imports `batchutil.go` for segregating batched transactions from Accelerator and delegates the invocations to `Invoke()` in `batchutil.go`.
@@ -91,11 +88,11 @@ batch:
     maxBatchItems: 10
 ```
 - `sdk`: Path to the fabric SDK configuration File
-- `host`: Host of Accelerator
-- `port`: Port of Accelerator
+- `host`: Host address of Accelerator
+- `port`: Port number of Accelerator
 - `queueSize`: The size of the in-memory queue that kept requested transactions until processing.
 - `maxWaitTimeSeconds`: Maximum waiting time in seconds to create a new batch transaction.
-- `maxBatchItems`: Maximum number of items for a new batch transaction.
+- `maxBatchItems`: Maximum number of items for a new batch transaction. 
 
 ## Whitepaper
 [Whitepaper](https://github.com/nexledger/accelerator/blob/master/docs/Whitepaper-Acceleratoring%20Throughput%20in%20Permissioned%20Blockchain%20Networks.pdf) includes:
