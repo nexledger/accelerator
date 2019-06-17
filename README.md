@@ -41,7 +41,7 @@ $ ./examples/ping/stop.sh
 ### Under the hood
 #### Modifying chaincode
 In order to apply Accelerator to your business, you need to modify your chaincode. 
-Accelerator aggregates multiple transactions into a batched transaction and submit the batched transaction to the endorsers. 
+Accelerator aggregates multiple transactions into a batched transaction and submits the batched transaction to the endorsers. 
 So chaincodes operating with Accelerator should be modified to execute aggregated transactions individually.
 
 `contracts/src/ping/ping.go` is the example chaincode with simple KV write/read operations.
