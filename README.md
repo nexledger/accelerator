@@ -1,12 +1,12 @@
 # Nexledger Accelerator
 Nexledger Accelerator is a software component designed to improve the performance of a blockchain network, e.g. Hyperledger Fabric, in terms of transaction throughput. Accelerator enables the blockchain network to deal with explosive transaction requests from applications. 
 
-Accelerator receives transactions from clients in front of blockchain nodes and provides transaction acceleration in terms of TPS (Transaction Per Second) by classifying, aggregating, and routing the transactions. The current version of Accelerator is compatible with Hyperledger Fabric v1.4.
+Accelerator receives transactions from clients on behalf of blockchain nodes and provides transaction acceleration in terms of TPS (Transaction Per Second) by classifying, aggregating, and routing the transactions to blockchain network. The current version of Accelerator is compatible with Hyperledger Fabric v1.4.
 
 
 ## Getting Started
 ### Prerequisites
-- Go 1.11+
+- Go (1.11.0 or greater)
 - Docker (17.06.2-ce or greater)
 - Docker-compose (1.14.0 or greater)
 
@@ -19,7 +19,7 @@ $ go build cmd/accelerator.go
 ## Running ping example
 The ping example shows how to configure and run Accelerator. The example is placed in In `examples/ping`. 
 
-To bootstrap Fabric network, please run `start.sh` script. It configures the Hyperledger Fabric network including install/instantiation of the example chaincode.
+To bootstrap Fabric network, please run `start.sh` script. It boots up the Hyperledger Fabric network including install/instantiation of the example chaincode.
 ```bash
 $ ./examples/ping/start.sh
 ```
@@ -29,8 +29,8 @@ To serve requests from clients, Accelerator should be up and running with proper
 $ ./accelerator -f examples/ping/configs/accelerator.yaml
 ```
 
-Accelerator is a gRPC server and the gRPC services are described in `protos/accelerator.proto`.
-You may send transactions using `examples/ping/ping_test.go` that has gRPC client for ping example. 
+Accelerator is a gRPC server, and the gRPC services are described in `protos/accelerator.proto`.
+You may send transactions using `examples/ping/ping_test.go` that has gRPC client for the ping example. 
 ```bash
 $  cd examples/ping
 $  go test
@@ -38,6 +38,7 @@ $  go test
 
 You can terminate and remove the network by run `stop.sh` script.
 ```bash
+(change dicrectory to root)
 $ ./examples/ping/stop.sh
 ```
 
