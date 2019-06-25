@@ -76,6 +76,12 @@ func WithMVCCCutter(readKeyIndices []int, writeKeyIndices []int) Composition {
 	}
 }
 
+func WithCutter(cutter Cutter) Composition {
+	return func(c *compositeCutter) {
+		c.Add(cutter)
+	}
+}
+
 func New(compositions ...Composition) Cutter {
 	ct := &compositeCutter{}
 	for _, composition := range compositions {
