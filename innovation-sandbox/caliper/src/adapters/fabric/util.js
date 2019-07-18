@@ -19,7 +19,7 @@
 
 const path = require('path');
 const fs = require('fs-extra');
-const util = require('innovation-sandbox/caliper/src/adapters/fabric/util');
+const util = require('util');
 
 const Client = require('fabric-client');
 const copService = require('fabric-ca-client/lib/FabricCAClientImpl.js');
