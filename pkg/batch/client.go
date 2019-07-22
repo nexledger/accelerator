@@ -84,12 +84,12 @@ func (s *Client) Register(acc *Acceleration) error {
 		return errors.New("Scheduler already registered: " + name)
 	}
 
-	invoker, err := fab.New(s.ctx, acc.ChannelId, acc.ChaincodeName, acc.Fcn, acc.Type)
+	encoder, err := encoding.New(acc.Encoding)
 	if err != nil {
 		return err
 	}
 
-	encoder, err := encoding.New(acc.Encoding)
+	invoker, err := fab.New(s.ctx, acc.ChannelId, acc.ChaincodeName, acc.Fcn, acc.Type, encoder)
 	if err != nil {
 		return err
 	}

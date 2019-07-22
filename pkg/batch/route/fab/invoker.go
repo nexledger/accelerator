@@ -20,16 +20,23 @@ import (
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"github.com/pkg/errors"
 
+	"github.com/nexledger/accelerator/pkg/batch/route/encoding"
+	"github.com/nexledger/accelerator/pkg/batch/tx"
 	"github.com/nexledger/accelerator/pkg/core"
 )
 
-type Invoker func([][]byte, int, ...channel.RequestOption) (*channel.Response, error)
+type Invoker func(*tx.Job, ...channel.RequestOption) (*channel.Response, error)
 
-func New(ctx *core.Context, channelId string, ccId string, fcn string, typ string) (Invoker, error) {
+func New(ctx *core.Context, channelId string, ccId string, fcn string, typ string, encoder encoding.Encoder) (Invoker, error) {
+	client, err := ctx.ChannelClient(channelId)
+	if err != nil {
+		return nil, err
+	}
+
 	switch typ {
 	case "execute":
-		return func(args [][]byte, txCnt int, opts ...channel.RequestOption) (*channel.Response, error) {
-			client, err := ctx.ChannelClient(channelId)
+		return func(job *tx.Job, opts ...channel.RequestOption) (*channel.Response, error) {
+			args, err := encoder.EncodeRequest(job.Args())
 			if err != nil {
 				return nil, err
 			}
@@ -41,8 +48,8 @@ func New(ctx *core.Context, channelId string, ccId string, fcn string, typ strin
 			return &resp, err
 		}, nil
 	case "query":
-		return func(args [][]byte, txCnt int, opts ...channel.RequestOption) (*channel.Response, error) {
-			client, err := ctx.ChannelClient(channelId)
+		return func(job *tx.Job, opts ...channel.RequestOption) (*channel.Response, error) {
+			args, err := encoder.EncodeRequest(job.Args())
 			if err != nil {
 				return nil, err
 			}
