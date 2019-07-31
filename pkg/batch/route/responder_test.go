@@ -48,6 +48,7 @@ func TestResponder_JobFailure(t *testing.T) {
 
 	msg := [][]byte{[]byte("1"), []byte("2"), []byte("3"), []byte("4"), []byte("5")}
 	mockEncoder.EXPECT().EncodeRequest(gomock.Any()).Return(msg, nil).AnyTimes()
+	//return empty struct
 	mockEncoder.EXPECT().DecodeResponse(gomock.Any()).Return([][]byte{}, nil).AnyTimes()
 
 	job := &tx.Job{}

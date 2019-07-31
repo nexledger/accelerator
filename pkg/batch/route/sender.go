@@ -22,7 +22,6 @@ import (
 
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 
-	"github.com/nexledger/accelerator/pkg/batch/route/encoding"
 	"github.com/nexledger/accelerator/pkg/batch/route/fab"
 	"github.com/nexledger/accelerator/pkg/batch/tx"
 )
@@ -33,7 +32,7 @@ type Sender interface {
 
 type JobSender struct {
 	invoker   fab.Invoker
-	responder *responder
+	responder Responder
 	recovery  bool
 }
 
@@ -70,10 +69,10 @@ func (s *JobSender) retry(job *tx.Job, resp *channel.Response) {
 	wg.Wait()
 }
 
-func New(invoker fab.Invoker, encoder encoding.Encoder, recovery bool) (Sender, error) {
+func NewSender(invoker fab.Invoker, responder Responder, recovery bool) (Sender, error) {
 	return &JobSender{
 		invoker,
-		&responder{encoder},
+		responder,
 		recovery,
 	}, nil
 }

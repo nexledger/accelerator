@@ -94,7 +94,7 @@ func (s *Client) Register(acc *Acceleration) error {
 		return err
 	}
 
-	sender, err := route.New(invoker, encoder, acc.Recovery)
+	sender, err := route.NewSender(invoker, route.NewResponder(encoder), acc.Recovery)
 	if err != nil {
 		return err
 	}
