@@ -110,9 +110,8 @@ func (s *Client) Register(acc *Acceleration) error {
 		cutterOpts = append(cutterOpts, cutter.WithMVCCCutter(acc.ReadKeyIndices, acc.WriteKeyIndices))
 	}
 
-	scheduler := queue.New(
-		sender,
-		cutterOpts,
+	scheduler := queue.NewScheduler(
+		queue.NewProcessor(sender, cutterOpts),
 		time.Duration(acc.MaxWaitTimeSeconds)*time.Second,
 		acc.QueueSize,
 	)

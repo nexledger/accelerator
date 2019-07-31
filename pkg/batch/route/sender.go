@@ -27,13 +27,17 @@ import (
 	"github.com/nexledger/accelerator/pkg/batch/tx"
 )
 
-type Sender struct {
+type Sender interface {
+	Send(job *tx.Job)
+}
+
+type JobSender struct {
 	invoker   fab.Invoker
 	responder *responder
 	recovery  bool
 }
 
-func (s *Sender) Send(job *tx.Job) {
+func (s *JobSender) Send(job *tx.Job) {
 	fabresp, err := s.invoker(job)
 	if err != nil {
 		if s.recovery && strings.Contains(err.Error(), "MVCC_READ_CONFLICT") {
@@ -47,7 +51,7 @@ func (s *Sender) Send(job *tx.Job) {
 	s.responder.JobSuccess(job, fabresp)
 }
 
-func (s *Sender) retry(job *tx.Job, resp *channel.Response) {
+func (s *JobSender) retry(job *tx.Job, resp *channel.Response) {
 	var wg sync.WaitGroup
 	wg.Add(len(job.Items()))
 	for _, i := range job.Items() {
@@ -66,8 +70,8 @@ func (s *Sender) retry(job *tx.Job, resp *channel.Response) {
 	wg.Wait()
 }
 
-func New(invoker fab.Invoker, encoder encoding.Encoder, recovery bool) (*Sender, error) {
-	return &Sender{
+func New(invoker fab.Invoker, encoder encoding.Encoder, recovery bool) (Sender, error) {
+	return &JobSender{
 		invoker,
 		&responder{encoder},
 		recovery,

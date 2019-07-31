@@ -28,14 +28,14 @@ import (
 type Invoker func(*tx.Job, ...channel.RequestOption) (*channel.Response, error)
 
 func New(ctx *core.Context, channelId string, ccId string, fcn string, typ string, encoder encoding.Encoder) (Invoker, error) {
-	client, err := ctx.ChannelClient(channelId)
-	if err != nil {
-		return nil, err
-	}
-
 	switch typ {
 	case "execute":
 		return func(job *tx.Job, opts ...channel.RequestOption) (*channel.Response, error) {
+			client, err := ctx.ChannelClient(channelId)
+			if err != nil {
+				return nil, err
+			}
+
 			args, err := encoder.EncodeRequest(job.Args())
 			if err != nil {
 				return nil, err
@@ -49,6 +49,11 @@ func New(ctx *core.Context, channelId string, ccId string, fcn string, typ strin
 		}, nil
 	case "query":
 		return func(job *tx.Job, opts ...channel.RequestOption) (*channel.Response, error) {
+			client, err := ctx.ChannelClient(channelId)
+			if err != nil {
+				return nil, err
+			}
+
 			args, err := encoder.EncodeRequest(job.Args())
 			if err != nil {
 				return nil, err
