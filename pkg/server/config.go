@@ -98,11 +98,10 @@ func loadConfig(configPath string) (*Config, error) {
 		return nil, errors.WithMessage(err, "Failed to unmarshal config file")
 	}
 
-	sdkConfigPath, err := filepath.Abs(conf.Sdk)
+	conf.Sdk, err = filepath.Abs(filepath.Join(filepath.Dir(configPath), conf.Sdk))
 	if err != nil {
 		return nil, errors.WithMessage(err, "Failed to convert sdk config file path")
 	}
-	conf.Sdk = sdkConfigPath
 
 	return conf, nil
 }

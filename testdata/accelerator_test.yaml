@@ -1,4 +1,4 @@
-sdk: "../../testdata/accelerator-sdk_test.yaml"
+sdk: "accelerator-sdk_test.yaml"
 host: "localhost"
 port: 5050
 userName: "Admin"
