@@ -19,7 +19,9 @@ package core
 import (
 	"sync"
 
+	"github.com/hyperledger/fabric-sdk-go/pkg/client/resmgmt"
 	"github.com/hyperledger/fabric-sdk-go/pkg/core/config"
+	"github.com/hyperledger/fabric-sdk-go/pkg/fab"
 
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
@@ -32,8 +34,32 @@ type Context struct {
 	user string
 	org  string
 
+	resmgmtClientLock  sync.Mutex
 	channelClientsLock sync.Mutex
-	channelClients     sync.Map
+	networkClientLock  sync.Mutex
+
+	resmgmtClient  *resmgmt.Client
+	channelClients sync.Map
+	networkClient  *Client
+}
+
+func (ctx *Context) ResourceClient() (*resmgmt.Client, error) {
+	if ctx.resmgmtClient != nil {
+		return ctx.resmgmtClient, nil
+	}
+	ctx.resmgmtClientLock.Lock()
+	defer ctx.resmgmtClientLock.Unlock()
+	if ctx.resmgmtClient != nil {
+		return ctx.resmgmtClient, nil
+	}
+
+	provider := ctx.sdk.Context(fabsdk.WithUser(ctx.user), fabsdk.WithOrg(ctx.org))
+	client, err := resmgmt.New(provider)
+	if err != nil {
+		return nil, errors.WithMessage(err, "Failed to create resource management client")
+	}
+	ctx.resmgmtClient = client
+	return client, nil
 }
 
 func (ctx *Context) ChannelClient(channelId string) (*channel.Client, error) {
@@ -54,6 +80,36 @@ func (ctx *Context) ChannelClient(channelId string) (*channel.Client, error) {
 	}
 	ctx.channelClients.Store(channelId, client)
 	return client, nil
+}
+
+func (ctx *Context) NetworkClient() (*Client, error) {
+	if ctx.networkClient != nil {
+		return ctx.networkClient, nil
+	}
+
+	ctx.networkClientLock.Lock()
+	defer ctx.networkClientLock.Unlock()
+	if ctx.networkClient != nil {
+		return ctx.networkClient, nil
+	}
+
+	configBackend, err := ctx.sdk.Config()
+	if err != nil {
+		return nil, errors.WithMessage(err, "failed to get config backend")
+	}
+	endpointConfig, err := fab.ConfigFromBackend(configBackend)
+	if err != nil {
+		return nil, errors.WithMessage(err, "failed to get endpoint config")
+	}
+	ctx.networkClient = NewNetworkClient(ctx.org, endpointConfig.NetworkConfig())
+	return ctx.networkClient, nil
+}
+
+func (ctx *Context) WithResourceTarget(peerUrl string) []resmgmt.RequestOption {
+	if len(peerUrl) == 0 {
+		return make([]resmgmt.RequestOption, 0)
+	}
+	return []resmgmt.RequestOption{resmgmt.WithTargetEndpoints(peerUrl)}
 }
 
 func (ctx *Context) FabricSDK() *fabsdk.FabricSDK {
