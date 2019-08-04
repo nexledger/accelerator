@@ -27,7 +27,7 @@ import (
 	"github.com/nexledger/accelerator/pkg/batch/route/encoding"
 	"github.com/nexledger/accelerator/pkg/batch/route/fab"
 	"github.com/nexledger/accelerator/pkg/batch/tx"
-	"github.com/nexledger/accelerator/pkg/core"
+	"github.com/nexledger/accelerator/pkg/fabwrap"
 )
 
 type Acceleration struct {
@@ -46,7 +46,7 @@ type Acceleration struct {
 }
 
 type Client struct {
-	ctx               *core.Context
+	ctx               fabwrap.Context
 	executeSchedulers map[string]*queue.Scheduler
 	querySchedulers   map[string]*queue.Scheduler
 }
@@ -135,7 +135,7 @@ func process(s *queue.Scheduler, args [][]byte) (*tx.Result, error) {
 	return result, nil
 }
 
-func New(ctx *core.Context) *Client {
+func New(ctx fabwrap.Context) *Client {
 	return &Client{
 		ctx,
 		make(map[string]*queue.Scheduler),

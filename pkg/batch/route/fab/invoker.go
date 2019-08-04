@@ -22,12 +22,12 @@ import (
 
 	"github.com/nexledger/accelerator/pkg/batch/route/encoding"
 	"github.com/nexledger/accelerator/pkg/batch/tx"
-	"github.com/nexledger/accelerator/pkg/core"
+	"github.com/nexledger/accelerator/pkg/fabwrap"
 )
 
 type Invoker func(*tx.Job, ...channel.RequestOption) (*channel.Response, error)
 
-func New(ctx *core.Context, channelId string, ccId string, fcn string, typ string, encoder encoding.Encoder) (Invoker, error) {
+func New(ctx fabwrap.Context, channelId string, ccId string, fcn string, typ string, encoder encoding.Encoder) (Invoker, error) {
 	switch typ {
 	case "execute":
 		return func(job *tx.Job, opts ...channel.RequestOption) (*channel.Response, error) {

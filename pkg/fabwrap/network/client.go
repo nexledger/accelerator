@@ -14,20 +14,20 @@
  *    limitations under the License.
  */
 
-package core
+package network
 
 import (
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/fab"
 )
 
 type Client struct {
-	org           string
-	networkConfig *fab.NetworkConfig
+	Org    string
+	Config *fab.NetworkConfig
 }
 
 func (c *Client) GetPeerUrls() []string {
 	peerUrls := make([]string, 0)
-	for _, peerConfig := range c.networkConfig.Peers {
+	for _, peerConfig := range c.Config.Peers {
 		peerUrls = append(peerUrls, peerConfig.URL)
 	}
 	return peerUrls
@@ -35,14 +35,14 @@ func (c *Client) GetPeerUrls() []string {
 
 func (c *Client) GetOrdererUrls() []string {
 	ordererUrls := make([]string, 0)
-	for _, ordererConfig := range c.networkConfig.Orderers {
+	for _, ordererConfig := range c.Config.Orderers {
 		ordererUrls = append(ordererUrls, ordererConfig.URL)
 	}
 	return ordererUrls
 }
 
 func (c *Client) GetMspId() string {
-	return c.networkConfig.Organizations[c.org].MSPID
+	return c.Config.Organizations[c.Org].MSPID
 }
 
 func NewNetworkClient(org string, networkConfig *fab.NetworkConfig) *Client {

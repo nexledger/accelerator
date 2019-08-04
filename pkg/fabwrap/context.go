@@ -14,21 +14,28 @@
  *    limitations under the License.
  */
 
-package core
+package fabwrap
 
 import (
 	"sync"
 
+	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/resmgmt"
 	"github.com/hyperledger/fabric-sdk-go/pkg/core/config"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fab"
-
-	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
 	"github.com/pkg/errors"
+
+	"github.com/nexledger/accelerator/pkg/fabwrap/network"
 )
 
-type Context struct {
+type Context interface {
+	ResourceClient() (*resmgmt.Client, error)
+	ChannelClient(channelId string) (*channel.Client, error)
+	NetworkClient() (*network.Client, error)
+}
+
+type context struct {
 	sdk *fabsdk.FabricSDK
 
 	user string
@@ -40,10 +47,10 @@ type Context struct {
 
 	resmgmtClient  *resmgmt.Client
 	channelClients sync.Map
-	networkClient  *Client
+	networkClient  *network.Client
 }
 
-func (ctx *Context) ResourceClient() (*resmgmt.Client, error) {
+func (ctx *context) ResourceClient() (*resmgmt.Client, error) {
 	if ctx.resmgmtClient != nil {
 		return ctx.resmgmtClient, nil
 	}
@@ -62,7 +69,7 @@ func (ctx *Context) ResourceClient() (*resmgmt.Client, error) {
 	return client, nil
 }
 
-func (ctx *Context) ChannelClient(channelId string) (*channel.Client, error) {
+func (ctx *context) ChannelClient(channelId string) (*channel.Client, error) {
 	if client, ok := ctx.channelClients.Load(channelId); ok {
 		return client.(*channel.Client), nil
 	}
@@ -82,7 +89,7 @@ func (ctx *Context) ChannelClient(channelId string) (*channel.Client, error) {
 	return client, nil
 }
 
-func (ctx *Context) NetworkClient() (*Client, error) {
+func (ctx *context) NetworkClient() (*network.Client, error) {
 	if ctx.networkClient != nil {
 		return ctx.networkClient, nil
 	}
@@ -101,41 +108,14 @@ func (ctx *Context) NetworkClient() (*Client, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to get endpoint config")
 	}
-	ctx.networkClient = NewNetworkClient(ctx.org, endpointConfig.NetworkConfig())
+	ctx.networkClient = network.NewNetworkClient(ctx.org, endpointConfig.NetworkConfig())
 	return ctx.networkClient, nil
 }
 
-func (ctx *Context) WithResourceTarget(peerUrl string) []resmgmt.RequestOption {
-	if len(peerUrl) == 0 {
-		return make([]resmgmt.RequestOption, 0)
-	}
-	return []resmgmt.RequestOption{resmgmt.WithTargetEndpoints(peerUrl)}
-}
-
-func (ctx *Context) FabricSDK() *fabsdk.FabricSDK {
-	return ctx.sdk
-}
-
-func (ctx *Context) User() string {
-	return ctx.user
-}
-
-func (ctx *Context) Organization() string {
-	return ctx.org
-}
-
-func (ctx *Context) Close() {
-	ctx.sdk.Close()
-}
-
-func New(confFilePath string, user string, org string, opts ...fabsdk.Option) (*Context, error) {
+func New(confFilePath string, user string, org string, opts ...fabsdk.Option) (*context, error) {
 	if sdk, err := fabsdk.New(config.FromFile(confFilePath), opts...); err != nil {
 		return nil, err
 	} else {
-		return &Context{sdk: sdk, user: user, org: org}, nil
+		return &context{sdk: sdk, user: user, org: org}, nil
 	}
-}
-
-func Wrap(sdk *fabsdk.FabricSDK, user string, org string) *Context {
-	return &Context{sdk: sdk, user: user, org: org}
 }
