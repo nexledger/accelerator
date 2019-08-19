@@ -49,7 +49,7 @@ func TestSchedulerAfterTimout(t *testing.T) {
 
 	scheduler.Schedule(&tx.Item{})
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(100 * time.Millisecond)
 }
 
 func TestSchedulerBeforeTimout(t *testing.T) {
@@ -61,7 +61,7 @@ func TestSchedulerBeforeTimout(t *testing.T) {
 	mockProcessor.EXPECT().Submit(gomock.Any()).Return(false)
 	mockProcessor.EXPECT().Empty().Return(true).Times(1)
 
-	scheduler := NewScheduler(mockProcessor, 5*time.Second, 1000)
+	scheduler := NewScheduler(mockProcessor, time.Second, 1000)
 	scheduler.Start()
 	scheduler.Schedule(&tx.Item{})
 
@@ -75,5 +75,5 @@ func TestSchedulerBeforeTimout(t *testing.T) {
 
 	scheduler.Schedule(&tx.Item{})
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(100 * time.Millisecond)
 }

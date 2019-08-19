@@ -27,7 +27,11 @@ const configFIle = "../../testdata/accelerator_test.yaml"
 func TestConfig(t *testing.T) {
 	conf, err := loadConfig(configFIle)
 	assert.NoError(t, err)
-	assert.NotNil(t, conf)
+	assert.Equal(t, "localhost", conf.Host)
+	assert.Equal(t, 5050, conf.Port)
+	assert.Equal(t, "Admin", conf.UserName)
+	assert.Equal(t, "ping", conf.Batch[0]["fcn"])
+	assert.Equal(t, 10, conf.Batch[1]["maxBatchItems"])
 
 	client, err := conf.BatchClient()
 	assert.NoError(t, err)

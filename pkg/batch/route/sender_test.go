@@ -44,14 +44,36 @@ func TestSenderOnSuccess(t *testing.T) {
 	sender.Send(&tx.Job{})
 }
 
-func TestSenderOnRetry(t *testing.T) {
+func TestSenderOnFailure(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	mockResponder := mocks.NewMockResponder(mockCtrl)
 	mockResponder.EXPECT().JobFailure(gomock.Any(), gomock.Any()).Return().Times(1)
 
+	errInvoker := func(job *tx.Job, opts ...channel.RequestOption) (*channel.Response, error) {
+		return nil, errors.New("Unknown Error")
+	}
+
+	job := &tx.Job{}
+	job.Add(&tx.Item{})
+
+	sender, err := NewSender(errInvoker, mockResponder, true)
+	assert.NoError(t, err)
+	sender.Send(job)
+}
+
+func TestSenderOnRetry(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockResponder := mocks.NewMockResponder(mockCtrl)
+	mockResponder.EXPECT().JobSuccess(gomock.Any(), gomock.Any()).Return().Times(1)
+
 	mvccInvoker := func(job *tx.Job, opts ...channel.RequestOption) (*channel.Response, error) {
+		if job.Retry {
+			return nil, nil
+		}
 		return nil, errors.New("MVCC_READ_CONFLICT")
 	}
 
