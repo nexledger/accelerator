@@ -36,6 +36,7 @@ type Job struct {
 	byteLen   int
 	items     []*Item
 	notifiers []chan *Result
+	Retry     bool
 }
 
 func (j *Job) Add(i *Item) *Job {

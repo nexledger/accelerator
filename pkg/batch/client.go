@@ -27,7 +27,7 @@ import (
 	"github.com/nexledger/accelerator/pkg/batch/route/encoding"
 	"github.com/nexledger/accelerator/pkg/batch/route/fab"
 	"github.com/nexledger/accelerator/pkg/batch/tx"
-	"github.com/nexledger/accelerator/pkg/core"
+	"github.com/nexledger/accelerator/pkg/fabwrap"
 )
 
 type Acceleration struct {
@@ -46,7 +46,7 @@ type Acceleration struct {
 }
 
 type Client struct {
-	ctx               *core.Context
+	ctx               fabwrap.Context
 	executeSchedulers map[string]*queue.Scheduler
 	querySchedulers   map[string]*queue.Scheduler
 }
@@ -84,17 +84,17 @@ func (s *Client) Register(acc *Acceleration) error {
 		return errors.New("Scheduler already registered: " + name)
 	}
 
-	invoker, err := fab.New(s.ctx, acc.ChannelId, acc.ChaincodeName, acc.Fcn, acc.Type)
-	if err != nil {
-		return err
-	}
-
 	encoder, err := encoding.New(acc.Encoding)
 	if err != nil {
 		return err
 	}
 
-	sender, err := route.New(invoker, encoder, acc.Recovery)
+	invoker, err := fab.New(s.ctx, acc.ChannelId, acc.ChaincodeName, acc.Fcn, acc.Type, encoder)
+	if err != nil {
+		return err
+	}
+
+	sender, err := route.NewSender(invoker, route.NewResponder(encoder), acc.Recovery)
 	if err != nil {
 		return err
 	}
@@ -110,9 +110,8 @@ func (s *Client) Register(acc *Acceleration) error {
 		cutterOpts = append(cutterOpts, cutter.WithMVCCCutter(acc.ReadKeyIndices, acc.WriteKeyIndices))
 	}
 
-	scheduler := queue.New(
-		sender,
-		cutterOpts,
+	scheduler := queue.NewScheduler(
+		queue.NewProcessor(sender, cutterOpts),
 		time.Duration(acc.MaxWaitTimeSeconds)*time.Second,
 		acc.QueueSize,
 	)
@@ -136,7 +135,7 @@ func process(s *queue.Scheduler, args [][]byte) (*tx.Result, error) {
 	return result, nil
 }
 
-func New(ctx *core.Context) *Client {
+func New(ctx fabwrap.Context) *Client {
 	return &Client{
 		ctx,
 		make(map[string]*queue.Scheduler),
