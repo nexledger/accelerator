@@ -36,18 +36,18 @@ func TestProcessor(t *testing.T) {
 	mockCutter := mocks.NewMockCutter(mockCtrl)
 	processor := processor{mockSender, mockCutter, &tx.Job{}}
 
-	mockCutter.EXPECT().Before(gomock.Any(), gomock.Any()).Return(cutter.Cut(false))
+	mockCutter.EXPECT().Before(gomock.Any(), gomock.Any()).Return(cutter.Cut(false), nil)
 	mockCutter.EXPECT().After(gomock.Any()).Return(cutter.Cut(false))
 	mockCutter.EXPECT().Clear().Return().AnyTimes()
 	processor.Submit(&tx.Item{})
 	assert.Equal(t, 1, processor.job.Size(), "Should have job size 1")
 
-	mockCutter.EXPECT().Before(gomock.Any(), gomock.Any()).Return(cutter.Cut(false))
+	mockCutter.EXPECT().Before(gomock.Any(), gomock.Any()).Return(cutter.Cut(false), nil)
 	mockCutter.EXPECT().After(gomock.Any()).Return(cutter.Cut(true))
 	assert.True(t, processor.Submit(&tx.Item{}), "Should have submitted")
 	assert.True(t, processor.Empty(), "Should have job size 0")
 
-	mockCutter.EXPECT().Before(gomock.Any(), gomock.Any()).Return(cutter.Cut(true))
+	mockCutter.EXPECT().Before(gomock.Any(), gomock.Any()).Return(cutter.Cut(true), nil)
 	mockCutter.EXPECT().After(gomock.Any()).Return(cutter.Cut(false))
 	assert.True(t, processor.Submit(&tx.Item{}), "Should have submitted")
 	assert.False(t, processor.Empty(), "Should have job size 1")

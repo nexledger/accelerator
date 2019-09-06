@@ -24,8 +24,8 @@ type byteLen struct {
 	maxByteLen int
 }
 
-func (c *byteLen) Before(job *tx.Job, item *tx.Item) Cut {
-	return job.Size() > 0 && job.ByteLen()+itemByteLen(item) >= c.maxByteLen
+func (c *byteLen) Before(job *tx.Job, item *tx.Item) (Cut, error) {
+	return job.Size() > 0 && job.ByteLen()+itemByteLen(item) >= c.maxByteLen, nil
 }
 
 func (c *byteLen) After(job *tx.Job) Cut {

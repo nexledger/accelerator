@@ -17,6 +17,8 @@
 package cutter
 
 import (
+	"fmt"
+
 	"github.com/nexledger/accelerator/pkg/batch/tx"
 )
 
@@ -26,15 +28,19 @@ type mvcc struct {
 	writtenKeys     map[string]bool
 }
 
-func (c *mvcc) Before(_ *tx.Job, item *tx.Item) Cut {
+func (c *mvcc) Before(_ *tx.Job, item *tx.Item) (Cut, error) {
+	if err := c.checkValidation(item); err != nil {
+		return false, err
+	}
+
 	for _, idx := range c.readKeyIndices {
 		rKey := string(item.Args[idx])
 		if _, ok := c.writtenKeys[rKey]; ok {
-			return true
+			return true, nil
 		}
 	}
 
-	return false
+	return false, nil
 }
 
 func (c *mvcc) After(job *tx.Job) Cut {
@@ -50,4 +56,20 @@ func (c *mvcc) After(job *tx.Job) Cut {
 
 func (c *mvcc) Clear() {
 	c.writtenKeys = make(map[string]bool)
+}
+
+func (c *mvcc) checkValidation(item *tx.Item) error {
+	for _, idx := range c.readKeyIndices {
+		if idx < 0 || idx >= len(item.Args) {
+			return fmt.Errorf("readKeyIndices must be within the argument range [%d, %d]", 0, len(item.Args)-1)
+		}
+	}
+
+	for _, idx := range c.writeKeyIndices {
+		if idx < 0 || idx >= len(item.Args) {
+			return fmt.Errorf("writeKeyIndices must be within the argument range [%d, %d]", 0, len(item.Args)-1)
+		}
+	}
+
+	return nil
 }

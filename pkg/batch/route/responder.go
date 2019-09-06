@@ -33,19 +33,6 @@ type responder struct {
 	encoder encoding.Encoder
 }
 
-func (r *responder) itemSuccess(notifier chan *tx.Result, payload []byte, resp *channel.Response) {
-	notifier <- &tx.Result{
-		TxId:            string(resp.TransactionID),
-		ValidationCode:  int32(resp.TxValidationCode),
-		ChaincodeStatus: resp.ChaincodeStatus,
-		Payload:         payload,
-	}
-}
-
-func (r *responder) itemFailure(notifier chan *tx.Result, err error) {
-	notifier <- &tx.Result{Error: err}
-}
-
 func (r *responder) JobSuccess(job *tx.Job, fabresp *channel.Response) {
 	results, err := r.encoder.DecodeResponse(fabresp.Payload)
 	if err != nil {
@@ -56,14 +43,20 @@ func (r *responder) JobSuccess(job *tx.Job, fabresp *channel.Response) {
 		return
 	}
 
+	items := job.Items()
 	for i, result := range results {
-		r.itemSuccess(job.Notifiers()[i], result, fabresp)
+		items[i].Success(&tx.Result{
+			TxId:            string(fabresp.TransactionID),
+			ValidationCode:  int32(fabresp.TxValidationCode),
+			ChaincodeStatus: fabresp.ChaincodeStatus,
+			Payload:         result,
+		})
 	}
 }
 
 func (r *responder) JobFailure(job *tx.Job, err error) {
-	for _, notifier := range job.Notifiers() {
-		r.itemFailure(notifier, err)
+	for _, i := range job.Items() {
+		i.Fail(err)
 	}
 }
 

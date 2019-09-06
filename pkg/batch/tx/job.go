@@ -23,6 +23,14 @@ type Item struct {
 	Notifier chan *Result
 }
 
+func (i *Item) Fail(err error) {
+	i.Notifier <- &Result{Error: err}
+}
+
+func (i *Item) Success(result *Result) {
+	i.Notifier <- result
+}
+
 type Result struct {
 	TxId            string
 	ValidationCode  int32
@@ -32,11 +40,10 @@ type Result struct {
 }
 
 type Job struct {
-	args      [][][]byte
-	byteLen   int
-	items     []*Item
-	notifiers []chan *Result
-	Retry     bool
+	args    [][][]byte
+	byteLen int
+	items   []*Item
+	Retry   bool
 }
 
 func (j *Job) Add(i *Item) *Job {
@@ -51,8 +58,6 @@ func (j *Job) Add(i *Item) *Job {
 	for _, row := range i.Args {
 		j.byteLen = j.byteLen + len(row)
 	}
-
-	j.notifiers = append(j.notifiers, i.Notifier)
 
 	return j
 }
@@ -70,14 +75,10 @@ func (j *Job) Items() []*Item {
 }
 
 func (j *Job) LastItem() (item *Item, exist bool) {
-	if j.Size() == 0 {
+	if j.Size() <= 0 {
 		return nil, false
 	}
 	return j.items[j.Size()-1], true
-}
-
-func (j *Job) Notifiers() []chan *Result {
-	return j.notifiers
 }
 
 func (j *Job) Args() [][][]byte {
