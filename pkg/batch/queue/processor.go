@@ -37,7 +37,12 @@ type processor struct {
 func (p *processor) Submit(i *tx.Item) bool {
 	processed := false
 
-	if p.cutter.Before(p.job, i) {
+	cut, err := p.cutter.Before(p.job, i)
+	if err != nil {
+		i.Fail(err)
+		return false
+	}
+	if cut {
 		processed = true
 		p.Process()
 	}

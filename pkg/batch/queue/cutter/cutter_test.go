@@ -35,20 +35,24 @@ func TestByteLen(t *testing.T) {
 	job := &tx.Job{}
 	item := &tx.Item{Args: [][]byte{make([]byte, 1000)}}
 
-	assert.False(t, bool(cutter.Before(job, item)))
+	cut, _ := cutter.Before(job, item)
+	assert.False(t, bool(cut))
 	job.Add(item)
 	assert.False(t, bool(cutter.After(job)))
 
-	assert.True(t, bool(cutter.Before(job, item)), "Expected to be cut because job length exceeds maxByteLen")
+	cut, _ = cutter.Before(job, item)
+	assert.True(t, bool(cut), "Expected to be cut because job length exceeds maxByteLen")
 	cutter.Clear()
 	job = &tx.Job{}
 	assert.False(t, bool(cutter.After(job)))
 
 	overflowItem := &tx.Item{Args: [][]byte{make([]byte, 2000)}}
 
-	assert.False(t, bool(cutter.Before(job, item)))
+	cut, _ = cutter.Before(job, item)
+	assert.False(t, bool(cut))
 	job.Add(overflowItem)
-	assert.True(t, bool(cutter.Before(job, item)), "Expected to be cut because a Item byte size exceeds maxByteLen of job")
+	cut, _ = cutter.Before(job, item)
+	assert.True(t, bool(cut), "Expected to be cut because a Item byte size exceeds maxByteLen of job")
 }
 
 func TestItemCount(t *testing.T) {
@@ -58,7 +62,8 @@ func TestItemCount(t *testing.T) {
 	item := &tx.Item{Args: [][]byte{}}
 
 	for i := 1; i <= maxItemSize; i++ {
-		assert.False(t, bool(cutter.Before(job, item)))
+		cut, _ := cutter.Before(job, item)
+		assert.False(t, bool(cut))
 		job.Add(item)
 		if cutter.After(job) {
 			assert.Equal(t, i, maxItemSize, "Expected to be cut when item size reaches maxItemSize")
@@ -72,16 +77,25 @@ func TestMVCC(t *testing.T) {
 	item := &tx.Item{Args: [][]byte{[]byte("A"), []byte("B"), []byte("A"), []byte("B")}}
 	job.Add(item)
 
-	assert.False(t, bool(cutter.Before(job, item)))
+	cut, err := cutter.Before(job, item)
+	assert.Nil(t, err)
+	assert.False(t, bool(cut))
 	job.Add(item)
 	assert.False(t, bool(cutter.After(job)))
 
 	conflictItem := &tx.Item{Args: [][]byte{[]byte("B"), []byte("A"), []byte("C"), []byte("A")}}
-	assert.True(t, bool(cutter.Before(job, conflictItem)), "Expected to be cut because read B after write B")
+	cut, err = cutter.Before(job, conflictItem)
+	assert.Nil(t, err)
+	assert.True(t, bool(cut), "Expected to be cut because read B after write B")
 	job = &tx.Job{}
 	cutter.Clear()
 	job.Add(conflictItem)
 	assert.False(t, bool(cutter.After(job)))
+
+	cutter.Clear()
+	invalidItem := &tx.Item{}
+	cut, err = cutter.Before(job, invalidItem)
+	assert.Error(t, err)
 }
 
 func TestComposition(t *testing.T) {
@@ -95,21 +109,24 @@ func TestComposition(t *testing.T) {
 	item := &tx.Item{Args: [][]byte{[]byte("A"), make([]byte, 500), []byte("B"), make([]byte, 500)}}
 	job.Add(item)
 
-	assert.True(t, bool(cutters.Before(job, item)), "Expected to be cut because byteLen cutter works")
+	cut, _ := cutters.Before(job, item)
+	assert.True(t, bool(cut), "Expected to be cut because byteLen cutter works")
 	job = &tx.Job{}
 	cutters.Clear()
 	job.Add(item)
 	assert.False(t, bool(cutters.After(job)))
 
 	item = &tx.Item{Args: [][]byte{[]byte("B"), make([]byte, 100), []byte("A"), make([]byte, 100)}}
-	assert.True(t, bool(cutters.Before(job, item)), "Expected to be cut because mvcc cutter works")
+	cut, _ = cutters.Before(job, item)
+	assert.True(t, bool(cut), "Expected to be cut because mvcc cutter works")
 	job = &tx.Job{}
 	cutters.Clear()
 	job.Add(item)
 	assert.False(t, bool(cutters.After(job)))
 
 	for i := 2; i <= maxItemSize; i++ {
-		assert.False(t, bool(cutters.Before(job, item)))
+		cut, _ = cutters.Before(job, item)
+		assert.False(t, bool(cut))
 		job.Add(item)
 		if cutters.After(job) {
 			assert.Equal(t, i, maxItemSize, "Expected to be cut because itemCount cutter works")

@@ -23,7 +23,7 @@ import (
 type Cut bool
 
 type Cutter interface {
-	Before(job *tx.Job, next *tx.Item) Cut
+	Before(job *tx.Job, next *tx.Item) (Cut, error)
 	After(job *tx.Job) Cut
 	Clear()
 }
