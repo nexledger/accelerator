@@ -1,9 +1,18 @@
-/**
-* Copyright 2017 HUAWEI. All Rights Reserved.
-*
-* SPDX-License-Identifier: Apache-2.0
-*
-*/
+/*
+ *    Copyright 2019 Samsung SDS
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 
 package main
 
@@ -21,10 +30,7 @@ const ERROR_ACCOUNT_EXISTING = "{\"code\":302, \"reason\": \"account already exi
 const ERROR_ACCOUNT_ABNORMAL = "{\"code\":303, \"reason\": \"abnormal account\"}"
 const ERROR_MONEY_NOT_ENOUGH = "{\"code\":304, \"reason\": \"account's money is not enough\"}"
 
-
-
 type SimpleChaincode struct {
-
 }
 
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
@@ -36,16 +42,16 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	function := string(stub.GetArgs()[0])
 
 	if function == "open" {
-		return invoke(stub, t.Open)
+		return Invoke(stub, t.Open)
 	}
 	if function == "delete" {
-		return invoke(stub, t.Delete)
+		return Invoke(stub, t.Delete)
 	}
 	if function == "query" {
-		return invoke(stub, t.Query)
+		return Invoke(stub, t.Query)
 	}
 	if function == "transfer" {
-		return invoke(stub, t.Transfer)
+		return Invoke(stub, t.Transfer)
 	}
 
 	return shim.Error(ERROR_WRONG_FORMAT)
@@ -57,13 +63,13 @@ func (t *SimpleChaincode) Open(stub shim.ChaincodeStubInterface, args []string) 
 		return shim.Error(ERROR_WRONG_FORMAT)
 	}
 
-	account  := args[0]
-	money,err := stub.GetState(account)
+	account := args[0]
+	money, err := stub.GetState(account)
 	if money != nil {
 		return shim.Error(ERROR_ACCOUNT_EXISTING)
 	}
 
-	_,err = strconv.Atoi(args[1])
+	_, err = strconv.Atoi(args[1])
 	if err != nil {
 		return shim.Error(ERROR_WRONG_FORMAT)
 	}
@@ -155,8 +161,7 @@ func (t *SimpleChaincode) Transfer(stub shim.ChaincodeStubInterface, args []stri
 	return shim.Success(nil)
 }
 
-
-func  main()  {
+func main() {
 	err := shim.Start(new(SimpleChaincode))
 	if err != nil {
 		fmt.Printf("Error starting chaincode: %v \n", err)
