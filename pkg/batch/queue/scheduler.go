@@ -19,8 +19,6 @@ package queue
 import (
 	"time"
 
-	"github.com/nexledger/accelerator/pkg/batch/queue/cutter"
-	"github.com/nexledger/accelerator/pkg/batch/route"
 	"github.com/nexledger/accelerator/pkg/batch/tx"
 )
 
@@ -28,7 +26,7 @@ type Scheduler struct {
 	maxWaitTime    time.Duration
 	timer          *time.Timer
 	scheduledItems chan *tx.Item
-	processor      *processor
+	processor      Processor
 }
 
 func (s *Scheduler) Schedule(i *tx.Item) {
@@ -48,10 +46,6 @@ func (s *Scheduler) Start() {
 			}
 		}
 	}()
-}
-
-func (s *Scheduler) Close() {
-	// Do nothing
 }
 
 func (s *Scheduler) scheduled(i *tx.Item) {
@@ -75,8 +69,7 @@ func (s *Scheduler) timeout() {
 	}
 }
 
-func New(sender *route.Sender, compositions []cutter.Composition, maxWaitTime time.Duration, queueSize int) *Scheduler {
-	processor := &processor{sender, cutter.New(compositions...), &tx.Job{}}
+func NewScheduler(processor Processor, maxWaitTime time.Duration, queueSize int) *Scheduler {
 	scheduler := &Scheduler{
 		maxWaitTime,
 		nil,

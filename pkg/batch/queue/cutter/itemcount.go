@@ -24,8 +24,8 @@ type itemCount struct {
 	maxItemSize int
 }
 
-func (c *itemCount) Before(_ *tx.Job, _ *tx.Item) Cut {
-	return false
+func (c *itemCount) Before(_ *tx.Job, _ *tx.Item) (Cut, error) {
+	return false, nil
 }
 
 func (c *itemCount) After(job *tx.Job) Cut {

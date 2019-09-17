@@ -24,21 +24,13 @@ import (
 	"github.com/nexledger/accelerator/pkg/batch/tx"
 )
 
+type Responder interface {
+	JobSuccess(job *tx.Job, fabresp *channel.Response)
+	JobFailure(job *tx.Job, err error)
+}
+
 type responder struct {
 	encoder encoding.Encoder
-}
-
-func (r *responder) ItemSuccess(notifier chan *tx.Result, payload []byte, resp *channel.Response) {
-	notifier <- &tx.Result{
-		TxId:            string(resp.TransactionID),
-		ValidationCode:  int32(resp.TxValidationCode),
-		ChaincodeStatus: resp.ChaincodeStatus,
-		Payload:         payload,
-	}
-}
-
-func (r *responder) ItemFailure(notifier chan *tx.Result, err error) {
-	notifier <- &tx.Result{Error: err}
 }
 
 func (r *responder) JobSuccess(job *tx.Job, fabresp *channel.Response) {
@@ -51,13 +43,23 @@ func (r *responder) JobSuccess(job *tx.Job, fabresp *channel.Response) {
 		return
 	}
 
+	items := job.Items()
 	for i, result := range results {
-		r.ItemSuccess(job.Notifiers()[i], result, fabresp)
+		items[i].Success(&tx.Result{
+			TxId:            string(fabresp.TransactionID),
+			ValidationCode:  int32(fabresp.TxValidationCode),
+			ChaincodeStatus: fabresp.ChaincodeStatus,
+			Payload:         result,
+		})
 	}
 }
 
 func (r *responder) JobFailure(job *tx.Job, err error) {
-	for _, notifier := range job.Notifiers() {
-		r.ItemFailure(notifier, err)
+	for _, i := range job.Items() {
+		i.Fail(err)
 	}
+}
+
+func NewResponder(encoder encoding.Encoder) Responder {
+	return &responder{encoder}
 }

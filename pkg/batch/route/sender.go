@@ -22,30 +22,22 @@ import (
 
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 
-	"github.com/nexledger/accelerator/pkg/batch/route/encoding"
 	"github.com/nexledger/accelerator/pkg/batch/route/fab"
 	"github.com/nexledger/accelerator/pkg/batch/tx"
 )
 
-type Sender struct {
+type Sender interface {
+	Send(job *tx.Job)
+}
+
+type JobSender struct {
 	invoker   fab.Invoker
-	responder *responder
-	encoder   encoding.Encoder
+	responder Responder
 	recovery  bool
 }
 
-func (s *Sender) Send(job *tx.Job) {
-	args, err := s.encoder.EncodeRequest(job.Args())
-	if err != nil {
-		s.responder.JobFailure(job, err)
-	}
-
-	if err != nil {
-		s.responder.JobFailure(job, err)
-		return
-	}
-
-	fabresp, err := s.invoker(args, len(job.Args()))
+func (s *JobSender) Send(job *tx.Job) {
+	fabresp, err := s.invoker(job)
 	if err != nil {
 		if s.recovery && strings.Contains(err.Error(), "MVCC_READ_CONFLICT") {
 			s.retry(job, fabresp)
@@ -58,41 +50,29 @@ func (s *Sender) Send(job *tx.Job) {
 	s.responder.JobSuccess(job, fabresp)
 }
 
-func (s *Sender) retry(job *tx.Job, resp *channel.Response) {
+func (s *JobSender) retry(job *tx.Job, resp *channel.Response) {
 	var wg sync.WaitGroup
 	wg.Add(len(job.Items()))
 	for _, i := range job.Items() {
 		go func(i *tx.Item, resp *channel.Response, wg *sync.WaitGroup) {
 			defer wg.Done()
 
-			args, err := s.encoder.EncodeRequest([][][]byte{i.Args})
+			job := &tx.Job{Retry: true}
+			fabresp, err := s.invoker(job.Add(i))
 			if err != nil {
-				s.responder.ItemFailure(i.Notifier, err)
+				s.responder.JobFailure(job, err)
 				return
 			}
-
-			fabresp, err := s.invoker(args, 1)
-			if err != nil {
-				s.responder.ItemFailure(i.Notifier, err)
-				return
-			}
-
-			results, err := s.encoder.DecodeResponse(resp.Payload)
-			if err != nil {
-				s.responder.ItemFailure(i.Notifier, err)
-			} else {
-				s.responder.ItemSuccess(i.Notifier, results[0], fabresp)
-			}
+			s.responder.JobSuccess(job, fabresp)
 		}(i, resp, &wg)
 	}
 	wg.Wait()
 }
 
-func New(invoker fab.Invoker, encoder encoding.Encoder, recovery bool) (*Sender, error) {
-	return &Sender{
+func NewSender(invoker fab.Invoker, responder Responder, recovery bool) (Sender, error) {
+	return &JobSender{
 		invoker,
-		&responder{encoder},
-		encoder,
+		responder,
 		recovery,
 	}, nil
 }

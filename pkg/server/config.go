@@ -25,7 +25,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/nexledger/accelerator/pkg/batch"
-	"github.com/nexledger/accelerator/pkg/core"
+	"github.com/nexledger/accelerator/pkg/fabwrap"
 )
 
 type Tls struct {
@@ -71,7 +71,7 @@ func (c *Config) BatchClient() (*batch.Client, error) {
 		accs = append(accs, reg)
 	}
 
-	ctx, err := core.New(c.Sdk, c.UserName, c.Organization)
+	ctx, err := fabwrap.New(c.Sdk, c.UserName, c.Organization)
 	if err != nil {
 		return nil, err
 	}
@@ -98,11 +98,10 @@ func loadConfig(configPath string) (*Config, error) {
 		return nil, errors.WithMessage(err, "Failed to unmarshal config file")
 	}
 
-	sdkConfigPath, err := filepath.Abs(conf.Sdk)
+	conf.Sdk, err = filepath.Abs(filepath.Join(filepath.Dir(configPath), conf.Sdk))
 	if err != nil {
 		return nil, errors.WithMessage(err, "Failed to convert sdk config file path")
 	}
-	conf.Sdk = sdkConfigPath
 
 	return conf, nil
 }

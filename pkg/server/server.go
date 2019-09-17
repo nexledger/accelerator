@@ -27,14 +27,14 @@ import (
 	"google.golang.org/grpc/credentials"
 
 	"github.com/nexledger/accelerator/pkg/batch"
-	"github.com/nexledger/accelerator/pkg/core"
+	"github.com/nexledger/accelerator/pkg/fabwrap"
 	"github.com/nexledger/accelerator/protos"
 )
 
 type Server struct {
 	host string
 	port int
-	ctx  *core.Context
+	ctx  fabwrap.Context
 	conf *Config
 	log  *zap.SugaredLogger
 

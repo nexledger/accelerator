@@ -22,8 +22,14 @@ import (
 	"github.com/nexledger/accelerator/pkg/batch/tx"
 )
 
+type Processor interface {
+	Submit(i *tx.Item) bool
+	Process()
+	Empty() bool
+}
+
 type processor struct {
-	sender *route.Sender
+	sender route.Sender
 	cutter cutter.Cutter
 	job    *tx.Job
 }
@@ -31,7 +37,12 @@ type processor struct {
 func (p *processor) Submit(i *tx.Item) bool {
 	processed := false
 
-	if p.cutter.Before(p.job, i) {
+	cut, err := p.cutter.Before(p.job, i)
+	if err != nil {
+		i.Fail(err)
+		return false
+	}
+	if cut {
 		processed = true
 		p.Process()
 	}
@@ -54,4 +65,8 @@ func (p *processor) Process() {
 
 func (p *processor) Empty() bool {
 	return p.job.Size() == 0
+}
+
+func NewProcessor(sender route.Sender, compositions []cutter.Composition) Processor {
+	return &processor{sender, cutter.New(compositions...), &tx.Job{}}
 }

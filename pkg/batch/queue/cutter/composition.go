@@ -26,13 +26,18 @@ type compositeCutter struct {
 	cutters []Cutter
 }
 
-func (c *compositeCutter) Before(j *tx.Job, next *tx.Item) Cut {
+func (c *compositeCutter) Before(j *tx.Job, next *tx.Item) (Cut, error) {
 	for _, ct := range c.cutters {
-		if ct.Before(j, next) {
-			return true
+		cut, err := ct.Before(j, next)
+		if err != nil {
+			return false, err
+		}
+
+		if cut {
+			return true, nil
 		}
 	}
-	return false
+	return false, nil
 }
 
 func (c *compositeCutter) After(j *tx.Job) Cut {
