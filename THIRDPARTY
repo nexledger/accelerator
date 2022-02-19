@@ -20,7 +20,7 @@ go-logging,"BSD 3-clause ""New"" or ""Revised"" License",http://github.com/op/go
 go-toml,MIT License,http://github.com/pelletier/go-toml/
 go-windows-terminal-sequences,MIT License,https://github.com/konsorten/go-windows-terminal-sequences
 golang-crypto,"BSD 3-clause ""New"" or ""Revised"" License",http://github.com/golang/crypto/
-golang-protobuf,"BSD 3-clause ""New"" or ""Revised"" License",https://github.com/golang/protobuf
+golang-protobuf,"BSD 3-clause ""New"" or ""Revised"" License",https://google.golang.org/protobuf
 golang-mock,Apache License 2.0,http://github.com/golang/mock/
 Gotty,"BSD 2-clause ""Simplified"" License",https://github.com/ijc/Gotty
 grpc-go,Apache License 2.0,https://github.com/grpc/grpc-go

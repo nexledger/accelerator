@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/nexledger/accelerator/protos";
+option go_package = "github.com/cellularhacker/accelerator/protos";
 
 service AcceleratorService {
     rpc Execute (TxRequest) returns (TxResponse) {
