@@ -6,7 +6,7 @@ Unzip the archive file, and simply place `bin/protoc` binary somewhere in your P
 Install protobuf plugin and grpc package.
 ```
 $ go get -u google.golang.org/grpc
-$ go get -u github.com/golang/protobuf/protoc-gen-go
+$ go get -u google.golang.org/protobuf/protoc-gen-go
 ```
 
 ## Compile .proto files
