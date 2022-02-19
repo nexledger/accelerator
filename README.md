@@ -38,7 +38,7 @@ $  go test
 
 You can terminate and remove the network by run `stop.sh` script.
 ```bash
-(change dicrectory to root)
+(change directory to root)
 $ ./examples/ping/stop.sh
 ```
 
